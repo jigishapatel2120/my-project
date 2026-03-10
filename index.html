@@ -1666,7 +1666,37 @@ footer {
 <!-- ════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+    /* Cloudflare email decode – decodes __cf_email__ spans with data-cfemail attributes */
+  (function(){
+    function decode(enc){
+      var r='',n=parseInt(enc.substr(0,2),16),i=2;
+      for(;i<enc.length;i+=2)r+=String.fromCharCode(parseInt(enc.substr(i,2),16)^n);
+      return r;
+    }
+    function fix(el){
+      var encoded=el.getAttribute('data-cfemail');
+      if(encoded){
+        var email=decode(encoded);
+        el.outerHTML='<a href="mailto:'+email+'">'+email+'</a>';
+      }
+    }
+    var spans=document.querySelectorAll('.__cf_email__');
+    for(var i=0;i<spans.length;i++)fix(spans[i]);
+    // Also handle anchor tags with data-cfemail
+    var links=document.querySelectorAll('a[data-cfemail]');
+    for(var j=0;j<links.length;j++){
+      var encoded=links[j].getAttribute('data-cfemail');
+      if(encoded){
+        var email=decode(encoded);
+        links[j].href='mailto:'+email;
+        if(links[j].innerHTML.indexOf('&#')!==-1||links[j].textContent.indexOf('[email')!==-1){
+          links[j].textContent=email;
+        }
+      }
+    }
+  })();
 /* ── utils ─────────────────────────────────────── */
 const $ = (s, ctx = document) => ctx.querySelector(s);
 const $$ = (s, ctx = document) => [...ctx.querySelectorAll(s)];
